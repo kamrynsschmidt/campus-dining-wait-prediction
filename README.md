@@ -21,7 +21,7 @@ This package rebuilds every result, table and figure in the paper *"When the Cro
 | `run_all.py` | Runs all of the above in order |
 | `Wait_Time_Demo.ipynb` | Google Colab notebook: step-by-step demo plus full rebuild |
 | `requirements.txt` | Exact package versions used |
-| `wait_log.csv` | Real export from the live form: 2 rows, both author tests (Sept 20, 2026); excluded from evaluation |
+| `wait_log.csv` | Real export from the live form: 2 rows, both author tests; excluded from evaluation |
 | `DEMO_wait_log_SYNTHETIC.csv` | The Checkpoint 2 synthetic file, kept for continuity; not used for the paper's results |
 | `intake_form/` | Google Apps Script source for the anonymous two-tap intake form |
 | `results/` | Reference outputs from the author's run (CSV/JSON), overwritten when you rerun |
@@ -34,7 +34,7 @@ This package rebuilds every result, table and figure in the paper *"When the Cro
 ### Option A: Google Colab (no install needed)
 1. Open [Google Colab](https://colab.research.google.com) → **File → Upload notebook** → choose `Wait_Time_Demo.ipynb`.
 2. Run the cells top to bottom. When asked, upload `Schmidt_IP_Final_Reproducibility.zip` (this whole package, zipped).
-3. Cells 2–5 show the pipeline on one dataset (about 30 seconds). Cell 6 runs the full rebuild (about 10–20 minutes).
+3. Cells 2–5 show the pipeline on one dataset (about 30 seconds). Cell 6 runs the full rebuild (about 10–30 minutes).
 
 ### Option B: Your own computer
 Requires Python 3.11 or newer.
