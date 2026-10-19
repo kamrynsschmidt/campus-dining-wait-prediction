@@ -33,13 +33,14 @@ This package rebuilds every result, table and figure in the paper *"When the Cro
 
 ### Option A: Google Colab (no install needed)
 1. Open [Google Colab](https://colab.research.google.com) → **File → Upload notebook** → choose `Wait_Time_Demo.ipynb`.
-2. Run the cells top to bottom. When asked, upload `Schmidt_IP_Final_Reproducibility.zip` (this whole package, zipped).
+2. Run the cells top to bottom. When asked, upload the package zip. Get it from this repository with **Code → Download ZIP** (any file name works).
 3. Cells 2–5 show the pipeline on one dataset (about 30 seconds). Cell 6 runs the full rebuild (about 10–30 minutes).
 
 ### Option B: Your own computer
 Requires Python 3.11 or newer.
 ```bash
-cd Schmidt_IP_Final_Reproducibility
+git clone https://github.com/kamrynsschmidt/campus-dining-wait-prediction.git
+cd campus-dining-wait-prediction
 python -m venv .venv
 source .venv/bin/activate            # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
