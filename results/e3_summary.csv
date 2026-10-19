@@ -1,0 +1,21 @@
+,,MAE_with,MAE_with,MAE_without,MAE_without,gain,gain
+,,mean,std,mean,std,mean,std
+shift,method,,,,,,
+0,Linear Regression,1.53,0.15,1.53,0.15,-0.0,0.01
+0,Random Forest,1.47,0.1,1.53,0.14,0.06,0.07
+0,Ridge (alpha=1),1.53,0.15,1.53,0.15,-0.0,0.01
+5,Linear Regression,1.54,0.12,1.54,0.12,-0.0,0.01
+5,Random Forest,1.48,0.1,1.53,0.12,0.05,0.07
+5,Ridge (alpha=1),1.53,0.12,1.53,0.12,-0.0,0.01
+10,Linear Regression,1.53,0.14,1.53,0.15,-0.0,0.01
+10,Random Forest,1.48,0.1,1.54,0.14,0.06,0.08
+10,Ridge (alpha=1),1.53,0.14,1.52,0.14,-0.0,0.01
+15,Linear Regression,1.5,0.13,1.5,0.13,0.0,0.01
+15,Random Forest,1.49,0.12,1.53,0.12,0.04,0.05
+15,Ridge (alpha=1),1.5,0.12,1.5,0.12,-0.0,0.01
+20,Linear Regression,1.52,0.13,1.52,0.13,-0.0,0.02
+20,Random Forest,1.5,0.09,1.53,0.1,0.03,0.03
+20,Ridge (alpha=1),1.51,0.13,1.51,0.13,-0.0,0.02
+30,Linear Regression,1.53,0.15,1.53,0.15,-0.0,0.01
+30,Random Forest,1.52,0.1,1.55,0.12,0.03,0.06
+30,Ridge (alpha=1),1.53,0.14,1.52,0.15,-0.0,0.01

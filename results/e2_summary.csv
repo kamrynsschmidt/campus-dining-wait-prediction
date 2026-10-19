@@ -1,0 +1,19 @@
+world,dismissal_feature,method,mean,std
+no_surge,False,Linear Regression,1.38,0.13
+no_surge,False,Random Forest,1.37,0.1
+no_surge,False,Ridge (alpha=1),1.38,0.13
+no_surge,True,B0: Global mean,3.03,0.19
+no_surge,True,B1: Meal-window mean,3.05,0.21
+no_surge,True,B2: Day x 30-min bin mean,3.57,0.17
+no_surge,True,Linear Regression,1.39,0.13
+no_surge,True,Random Forest,1.41,0.1
+no_surge,True,Ridge (alpha=1),1.38,0.13
+surge,False,Linear Regression,1.53,0.15
+surge,False,Random Forest,1.53,0.14
+surge,False,Ridge (alpha=1),1.53,0.15
+surge,True,B0: Global mean,3.56,0.18
+surge,True,B1: Meal-window mean,3.54,0.19
+surge,True,B2: Day x 30-min bin mean,4.13,0.2
+surge,True,Linear Regression,1.53,0.15
+surge,True,Random Forest,1.47,0.1
+surge,True,Ridge (alpha=1),1.53,0.15

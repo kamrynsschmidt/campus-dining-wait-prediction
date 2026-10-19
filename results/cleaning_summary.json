@@ -1,0 +1,35 @@
+{
+ "real_form_tests": {
+  "raw": 2,
+  "missing_field": 0,
+  "unknown_category": 0,
+  "reversed_timestamps": 0,
+  "over_max_wait": 0,
+  "wait_mismatch": 0,
+  "duplicate": 0,
+  "outside_meal_hours": 0,
+  "clean": 2
+ },
+ "cp2_synthetic": {
+  "raw": 99,
+  "missing_field": 1,
+  "unknown_category": 0,
+  "reversed_timestamps": 0,
+  "over_max_wait": 0,
+  "wait_mismatch": 1,
+  "duplicate": 1,
+  "outside_meal_hours": 0,
+  "clean": 96
+ },
+ "generated_mean": {
+  "raw": 251.6,
+  "missing_field": 2.0,
+  "unknown_category": 2.0,
+  "reversed_timestamps": 2.0,
+  "over_max_wait": 0.0,
+  "wait_mismatch": 2.0,
+  "duplicate": 2.0,
+  "outside_meal_hours": 2.0,
+  "clean": 239.6
+ }
+}

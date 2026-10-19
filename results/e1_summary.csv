@@ -1,0 +1,15 @@
+,,MAE,MAE,RMSE,RMSE,R2,R2
+,,mean,std,mean,std,mean,std
+cv,method,,,,,,
+grouped,B0: Global mean,3.56,0.18,4.38,0.2,-0.01,0.01
+grouped,B1: Meal-window mean,3.54,0.19,4.36,0.19,-0.01,0.03
+grouped,B2: Day x 30-min bin mean,4.13,0.2,5.26,0.29,-0.48,0.22
+grouped,Linear Regression,1.53,0.15,1.93,0.19,0.8,0.05
+grouped,Random Forest,1.47,0.1,1.83,0.12,0.82,0.03
+grouped,Ridge (alpha=1),1.53,0.15,1.92,0.19,0.8,0.05
+shuffled,B0: Global mean,3.56,0.18,4.37,0.2,-0.01,0.01
+shuffled,B1: Meal-window mean,3.55,0.18,4.36,0.18,-0.01,0.03
+shuffled,B2: Day x 30-min bin mean,4.03,0.16,5.11,0.17,-0.38,0.11
+shuffled,Linear Regression,1.42,0.11,1.79,0.14,0.83,0.03
+shuffled,Random Forest,1.38,0.08,1.73,0.1,0.84,0.02
+shuffled,Ridge (alpha=1),1.42,0.11,1.79,0.14,0.83,0.03

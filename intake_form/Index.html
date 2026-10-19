@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --aggie-blue:#004684; --aggie-gold:#fdb927; --ink:#1b1b1b; --muted:#5b6470; --bg:#f6f7f9; --card:#fff; --ok:#1d7a3a; --err:#b3261e; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:var(--aggie-blue); color:#fff; padding:16px; }
+  header h1 { margin:0; font-size:1.2rem; }
+  header p { margin:4px 0 0; font-size:.85rem; opacity:.85; }
+  main { max-width:480px; margin:0 auto; padding:16px; }
+  .card { background:var(--card); border-radius:12px; padding:16px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  h2 { font-size:1rem; margin:0 0 10px; }
+  label.opt { display:block; border:2px solid #d6dbe1; border-radius:10px; padding:12px; margin:8px 0; font-size:.95rem; cursor:pointer; }
+  label.opt input { margin-right:8px; }
+  label.opt:has(input:checked) { border-color:var(--aggie-blue); background:#eef4fb; }
+  button { width:100%; border:0; border-radius:10px; padding:16px; font-size:1.05rem; font-weight:600; cursor:pointer; }
+  .primary { background:var(--aggie-blue); color:#fff; }
+  .gold { background:var(--aggie-gold); color:#1b1b1b; }
+  .ghost { background:transparent; color:var(--muted); font-weight:500; padding:10px; font-size:.9rem; }
+  button:disabled { opacity:.5; cursor:default; }
+  .timer { font-size:2.2rem; font-weight:700; text-align:center; margin:6px 0 12px; font-variant-numeric:tabular-nums; }
+  .msg { text-align:center; font-size:.95rem; margin-top:10px; min-height:1.2em; }
+  .ok { color:var(--ok); } .err { color:var(--err); }
+  .hidden { display:none; }
+  .small { font-size:.8rem; color:var(--muted); }
+  input[type=datetime-local] { width:100%; padding:10px; font-size:1rem; border:2px solid #d6dbe1; border-radius:10px; margin:4px 0 10px; }
+  .tabs { display:flex; gap:8px; margin-bottom:14px; }
+  .tabs button { padding:10px; font-size:.9rem; background:#e3e7ec; color:var(--ink); }
+  .tabs button.active { background:var(--aggie-blue); color:#fff; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Williams Dining Hall Wait Logger</h1>
+  <p>Anonymous. No names, IDs, or emails collected. Takes two taps.</p>
+</header>
+<main>
+  <div class="tabs">
+    <button id="tabLive" class="active" onclick="showMode('live')">I'm in line</button>
+    <button id="tabManual" onclick="showMode('manual')">Manual entry</button>
+  </div>
+
+  <!-- LIVE MODE -->
+  <section id="live">
+    <div class="card" id="stepJoin">
+      <h2>1. Where does the line reach right now?</h2>
+      <div id="queueOptsLive"></div>
+      <button class="primary" id="joinBtn" onclick="joinLine()">I just got in line</button>
+    </div>
+    <div class="card hidden" id="stepTap">
+      <h2>2. Tap when you swipe your Aggie OneCard</h2>
+      <div class="timer" id="timer">0:00</div>
+      <button class="gold" id="tapBtn" onclick="tapCard()">I just tapped my card</button>
+      <button class="ghost" onclick="cancelLine()">Cancel, I left the line</button>
+    </div>
+  </section>
+
+  <!-- MANUAL MODE (researcher ground-truth) -->
+  <section id="manual" class="hidden">
+    <div class="card">
+      <h2>Observed entry</h2>
+      <p class="small">For logging an observed person: when they joined the line and when they reached the card reader.</p>
+      <label class="small">Joined line</label>
+      <input type="datetime-local" id="mJoin" step="60">
+      <label class="small">Tapped card</label>
+      <input type="datetime-local" id="mTap" step="60">
+      <div id="queueOptsManual"></div>
+      <button class="primary" id="manualBtn" onclick="submitManual()">Save observation</button>
+    </div>
+  </section>
+
+  <div class="msg" id="msg"></div>
+</main>
+
+<script>
+  var joinTime = null, timerId = null, CATS = [];
+  var KEY = 'williamsJoin';
+
+  function store(k, v) { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} }
+  function load(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+
+  function renderOpts(containerId, name) {
+    var html = '';
+    CATS.forEach(function (c, i) {
+      html += '<label class="opt"><input type="radio" name="' + name + '" value="' + c + '"' + (i === 0 ? '' : '') + '>' + c.replace(/^[A-D]: /, '') + '</label>';
+    });
+    document.getElementById(containerId).innerHTML = html;
+  }
+  function picked(name) {
+    var el = document.querySelector('input[name="' + name + '"]:checked');
+    return el ? el.value : null;
+  }
+  function say(text, cls) { var m = document.getElementById('msg'); m.textContent = text; m.className = 'msg ' + (cls || ''); }
+
+  function showMode(mode) {
+    document.getElementById('live').classList.toggle('hidden', mode !== 'live');
+    document.getElementById('manual').classList.toggle('hidden', mode !== 'manual');
+    document.getElementById('tabLive').classList.toggle('active', mode === 'live');
+    document.getElementById('tabManual').classList.toggle('active', mode === 'manual');
+    say('');
+  }
+
+  function startTimer() {
+    document.getElementById('stepJoin').classList.add('hidden');
+    document.getElementById('stepTap').classList.remove('hidden');
+    clearInterval(timerId);
+    timerId = setInterval(function () {
+      var s = Math.max(0, Math.floor((Date.now() - joinTime.at) / 1000));
+      document.getElementById('timer').textContent = Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+    }, 500);
+  }
+
+  function resetLive() {
+    clearInterval(timerId);
+    joinTime = null; store(KEY, null);
+    document.getElementById('stepTap').classList.add('hidden');
+    document.getElementById('stepJoin').classList.remove('hidden');
+    document.querySelectorAll('input[name="qLive"]').forEach(function (r) { r.checked = false; });
+    document.getElementById('tapBtn').disabled = false;
+  }
+
+  function joinLine() {
+    var q = picked('qLive');
+    if (!q) { say('Pick where the line reaches first.', 'err'); return; }
+    joinTime = { at: Date.now(), queue: q };
+    store(KEY, JSON.stringify(joinTime));
+    say('Timer started. Keep this page open.', 'ok');
+    startTimer();
+  }
+
+  function cancelLine() { resetLive(); say('Cancelled. Nothing was saved.'); }
+
+  function tapCard() {
+    if (!joinTime) return;
+    var btn = document.getElementById('tapBtn'); btn.disabled = true;
+    say('Saving...');
+    send({ source: 'crowd', joinIso: new Date(joinTime.at).toISOString(), tapIso: new Date().toISOString(), queue: joinTime.queue },
+      function () { resetLive(); },
+      function () { btn.disabled = false; });
+  }
+
+  function submitManual() {
+    var j = document.getElementById('mJoin').value, t = document.getElementById('mTap').value, q = picked('qManual');
+    if (!j || !t || !q) { say('Fill in both times and the line length.', 'err'); return; }
+    var btn = document.getElementById('manualBtn'); btn.disabled = true;
+    send({ source: 'manual', joinIso: new Date(j).toISOString(), tapIso: new Date(t).toISOString(), queue: q },
+      function () { btn.disabled = false; document.getElementById('mJoin').value = ''; document.getElementById('mTap').value = ''; },
+      function () { btn.disabled = false; });
+  }
+
+  function send(entry, onOk, onErr) {
+    google.script.run
+      .withSuccessHandler(function (r) {
+        say('Saved: ' + r.wait + ' min wait' + (r.flag ? ' (flagged: ' + r.flag + ')' : '') + '. Thank you!', 'ok');
+        onOk();
+      })
+      .withFailureHandler(function (e) { say('Could not save: ' + e.message, 'err'); onErr(); })
+      .submitEntry(entry);
+  }
+
+  google.script.run.withSuccessHandler(function (cats) {
+    CATS = cats;
+    renderOpts('queueOptsLive', 'qLive');
+    renderOpts('queueOptsManual', 'qManual');
+    var saved = load(KEY);
+    if (saved) {
+      try {
+        joinTime = JSON.parse(saved);
+        if (Date.now() - joinTime.at < 2 * 60 * 60 * 1000) { startTimer(); say('Resumed your timer.'); }
+        else resetLive();
+      } catch (e) { resetLive(); }
+    }
+  }).getQueueCategories();
+</script>
+</body>
+</html>
